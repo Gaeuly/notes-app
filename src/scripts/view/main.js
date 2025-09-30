@@ -13,25 +13,33 @@ const main = () => {
     noteList.innerHTML = '<div class="loader"></div>';
   };
 
+  const renderError = (message) => {
+    noteList.innerHTML = `<p class="placeholder">Error: ${message}</p>`;
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: `Terjadi kesalahan: ${message}`,
+    });
+  };
+
   const renderNotes = async () => {
     showLoading();
     try {
       const notes = await api.getNotes();
-      noteList.notes = notes;
+      if (notes.length === 0) {
+        noteList.innerHTML = '<p class="placeholder">Tidak ada catatan untuk ditampilkan.</p>';
+      } else {
+        noteList.notes = notes;
+      }
     } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: `Gagal memuat catatan: ${error.message}`,
-      });
-      noteList.innerHTML = '';
+      renderError(error.message);
     }
   };
 
   const addNoteHandler = async (event) => {
     try {
       await api.createNote(event.detail);
-      renderNotes();
+      await renderNotes(); // Muat ulang semua catatan
       Swal.fire({
         icon: 'success',
         title: 'Sukses!',
@@ -51,7 +59,7 @@ const main = () => {
   const deleteNoteHandler = async (event) => {
     try {
       await api.deleteNote(event.detail.noteId);
-      renderNotes();
+      await renderNotes(); // Muat ulang semua catatan
       Swal.fire({
         icon: 'success',
         title: 'Dihapus!',
@@ -69,9 +77,10 @@ const main = () => {
   };
 
   noteForm.addEventListener('note-added', addNoteHandler);
+  // Menggunakan event delegation untuk listener tombol hapus
   noteList.addEventListener('note-deleted', deleteNoteHandler);
 
-  // Render pertama kali
+  // Render pertama kali saat halaman dimuat
   renderNotes();
 };
 

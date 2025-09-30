@@ -20,7 +20,7 @@ class NoteForm extends HTMLElement {
         button { padding: 12px 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
         .validation-message { color: var(--error-color); font-size: 0.8rem; margin-top: -10px; display: none; }
       </style>
-      <form>
+      <form id="noteForm" novalidate>
         <h2>Buat Catatan Baru</h2>
         <input type="text" id="noteTitle" placeholder="Judul..." required>
         <p id="titleValidation" class="validation-message">Judul tidak boleh kosong.</p>
@@ -32,7 +32,7 @@ class NoteForm extends HTMLElement {
   }
 
   connectedCallback() {
-    const form = this.shadowRoot.querySelector('form');
+    const form = this.shadowRoot.querySelector('#noteForm');
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       const titleInput = this.shadowRoot.querySelector('#noteTitle');
