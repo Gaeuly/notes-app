@@ -4,7 +4,8 @@ import '../components/NoteList.js';
 import NotesAPI from '../data/NotesAPI.js';
 import Swal from 'sweetalert2';
 
-const main = () => {
+// Pastikan DOM sudah siap sepenuhnya
+document.addEventListener('DOMContentLoaded', () => {
   const noteForm = document.querySelector('note-form');
   const noteList = document.querySelector('note-list');
   const api = new NotesAPI();
@@ -14,7 +15,7 @@ const main = () => {
   };
 
   const renderError = (message) => {
-    noteList.innerHTML = `<p class="placeholder">Error: ${message}</p>`;
+    noteList.innerHTML = `<p class="placeholder" style="color: var(--error-color);">Gagal memuat: ${message}</p>`;
     Swal.fire({
       icon: 'error',
       title: 'Oops...',
@@ -22,15 +23,11 @@ const main = () => {
     });
   };
 
-  const renderNotes = async () => {
+  const getAndRenderNotes = async () => {
     showLoading();
     try {
       const notes = await api.getNotes();
-      if (notes.length === 0) {
-        noteList.innerHTML = '<p class="placeholder">Tidak ada catatan untuk ditampilkan.</p>';
-      } else {
-        noteList.notes = notes;
-      }
+      noteList.notes = notes;
     } catch (error) {
       renderError(error.message);
     }
@@ -39,7 +36,7 @@ const main = () => {
   const addNoteHandler = async (event) => {
     try {
       await api.createNote(event.detail);
-      await renderNotes(); // Muat ulang semua catatan
+      await getAndRenderNotes();
       Swal.fire({
         icon: 'success',
         title: 'Sukses!',
@@ -59,7 +56,7 @@ const main = () => {
   const deleteNoteHandler = async (event) => {
     try {
       await api.deleteNote(event.detail.noteId);
-      await renderNotes(); // Muat ulang semua catatan
+      await getAndRenderNotes();
       Swal.fire({
         icon: 'success',
         title: 'Dihapus!',
@@ -77,11 +74,8 @@ const main = () => {
   };
 
   noteForm.addEventListener('note-added', addNoteHandler);
-  // Menggunakan event delegation untuk listener tombol hapus
   noteList.addEventListener('note-deleted', deleteNoteHandler);
 
-  // Render pertama kali saat halaman dimuat
-  renderNotes();
-};
-
-document.addEventListener('DOMContentLoaded', main);
+  // Panggil fungsi untuk memuat catatan saat skrip dieksekusi
+  getAndRenderNotes();
+});
