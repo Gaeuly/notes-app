@@ -4,8 +4,8 @@ import '../components/NoteList.js';
 import NotesAPI from '../data/NotesAPI.js';
 import Swal from 'sweetalert2';
 
-// Pastikan DOM sudah siap sepenuhnya
-document.addEventListener('DOMContentLoaded', () => {
+const main = () => {
+  // Ambil elemen dari DOM
   const noteForm = document.querySelector('note-form');
   const noteList = document.querySelector('note-list');
   const api = new NotesAPI();
@@ -76,6 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
   noteForm.addEventListener('note-added', addNoteHandler);
   noteList.addEventListener('note-deleted', deleteNoteHandler);
 
-  // Panggil fungsi untuk memuat catatan saat skrip dieksekusi
+  // Panggil fungsi untuk memuat catatan
   getAndRenderNotes();
-});
+};
+
+// Pastikan DOM sudah siap sebelum menjalankan main()
+document.addEventListener('DOMContentLoaded', main);
